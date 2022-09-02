@@ -1,0 +1,28 @@
+version: 2.1
+
+executors:
+  basic:
+    docker:
+      - image: cimg/python:3.9
+    resource_class: small
+
+jobs:
+  test:
+    executor: basic
+    working_directory: ~/project/foo
+    steps:
+      - checkout:
+          path: ~/project
+      - run: |
+          pwd
+          ls -laH .
+      - run:
+          name: run script in working directory
+          command: python test.py
+          environment:
+            FOO: "fun with working directory"
+
+workflows:
+  main:
+    jobs:
+      - test
