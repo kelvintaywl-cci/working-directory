@@ -8,8 +8,11 @@ executors:
 
 jobs:
   test:
+    parameters:
+      working-directory:
+        type: string
     executor: basic
-    working_directory: ~/project/foo
+    working_directory: << parameters.working-directory >>
     steps:
       - checkout:
           path: ~/project
@@ -21,8 +24,14 @@ jobs:
           command: python test.py
           environment:
             FOO: "fun with working directory"
+            BAR: "good times with working directory"
 
 workflows:
   main:
     jobs:
-      - test
+      - test:
+          name: foo
+          working-directory: ~/project/foo
+      - test:
+          name: bar
+          working-directory: ~/project/bar
