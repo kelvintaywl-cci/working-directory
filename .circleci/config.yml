@@ -35,7 +35,8 @@ jobs:
           # current working directory
           root: .
           paths:
-            - "*.txt"
+            # try to persist everything in the working directory
+            - "*"
   check:
     executor: basic
     steps:
