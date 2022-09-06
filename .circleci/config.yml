@@ -25,6 +25,23 @@ jobs:
           environment:
             FOO: "fun with working directory"
             BAR: "good times with working directory"
+      - run:
+          name: generate new file
+          command: |
+            echo "Ran from ${CIRCLE_BUILD_URL}" > $CIRCLE_JOB.txt
+
+            cat $CIRCLE_JOB.txt
+      - persist_to_workspace:
+          # current working directory
+          root: .
+          paths:
+            - *.txt
+  check:
+    executor: basic
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run: ls -laH .
 
 workflows:
   main:
@@ -35,3 +52,7 @@ workflows:
       - test:
           name: bar
           working-directory: ~/project/bar
+      - check:
+          requires:
+            - foo
+            - bar
