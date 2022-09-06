@@ -16,8 +16,9 @@ jobs:
           condition: << parameters.after-deps >>
           steps:
             - steps: << parameters.after-deps >>
-      - unless:
-          condition: << parameters.after-deps >>
+      - when:
+          condition:
+            equal: ["[]", << parameters.after-deps >> ]
           steps:
             - run: echo "No steps provided"
             
