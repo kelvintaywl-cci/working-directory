@@ -10,9 +10,10 @@ jobs:
   test:
     parameters:
       working-directory:
+        description: relative folder to ~/project
         type: string
     executor: basic
-    working_directory: << parameters.working-directory >>
+    working_directory: ~/project/<< parameters.working-directory >>
     steps:
       - checkout:
           path: ~/project
@@ -33,7 +34,7 @@ jobs:
             cat $CIRCLE_JOB.txt
       - persist_to_workspace:
           # current working directory
-          root: /
+          root: ~/project
           paths:
             # try to persist everything in the working directory
             - << parameters.working-directory >>
@@ -49,10 +50,10 @@ workflows:
     jobs:
       - test:
           name: foo
-          working-directory: ~/project/foo
+          working-directory: foo
       - test:
           name: bar
-          working-directory: ~/project/bar
+          working-directory: bar
       - check:
           requires:
             - foo
