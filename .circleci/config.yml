@@ -33,10 +33,10 @@ jobs:
             cat $CIRCLE_JOB.txt
       - persist_to_workspace:
           # current working directory
-          root: .
+          root: /
           paths:
             # try to persist everything in the working directory
-            - "*"
+            - << parameters.working-directory >>
   check:
     executor: basic
     steps:
