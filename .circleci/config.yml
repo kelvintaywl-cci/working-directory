@@ -1,62 +1,32 @@
 version: 2.1
 
-executors:
-  basic:
-    docker:
-      - image: cimg/python:3.9
-    resource_class: small
-
 jobs:
-  test:
+  build:
     parameters:
-      working-directory:
-        description: relative folder to ~/project
-        type: string
-    executor: basic
-    working_directory: ~/project/<< parameters.working-directory >>
+      after-deps:
+        description: "Steps that will be executed after dependencies are installed, but before tests are run"
+        type: steps
+        default: []
+    docker:
+      - image: cimg/base:edge
     steps:
-      - checkout:
-          path: ~/project
-      - run: |
-          pwd
-          ls -laH .
-      - run:
-          name: run script in working directory
-          command: python test.py
-          environment:
-            FOO: "fun with working directory"
-            BAR: "good times with working directory"
-      - run:
-          name: generate new file
-          command: |
-            echo "Ran from ${CIRCLE_BUILD_URL}" > $CIRCLE_JOB.txt
-
-            cat $CIRCLE_JOB.txt
-      - persist_to_workspace:
-          # current working directory
-          root: ~/project
-          paths:
-            # try to persist everything in the working directory
-            - << parameters.working-directory >>
-  check:
-    executor: basic
-    steps:
-      - attach_workspace:
-          at: ~/project
-      - run: sudo apt update -y && sudo apt install tree
-      - run: |
-          tree -L 3 .
-
+      - checkout
+      - run: echo "<< parameters.after-deps >>"
+      - when:
+          condition: << parameters.after-deps >>
+          steps:
+            - steps: << parameters.after-deps >>
+      - unless:
+          condition: << parameters.after-deps >>
+          steps:
+            - run: echo "No steps provided"
+            
 workflows:
-  main:
+  workflow:
     jobs:
-      - test:
-          name: foo
-          working-directory: foo
-      - test:
-          name: bar
-          working-directory: bar
-      - check:
-          requires:
-            - foo
-            - bar
+      - build:
+          name: no-custom-steps
+      - build:
+          name: with-custom-steps
+          after-deps:
+            - run: echo custom
