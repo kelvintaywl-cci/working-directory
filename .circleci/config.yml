@@ -43,7 +43,9 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/project
-      - run: ls -laH .
+      - run: sudo apt install tree
+      - run: |
+          tree -L 3 .
 
 workflows:
   main:
