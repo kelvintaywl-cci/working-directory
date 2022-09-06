@@ -43,7 +43,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/project
-      - run: sudo apt install tree
+      - run: sudo apt update -y && sudo apt install tree
       - run: |
           tree -L 3 .
 
